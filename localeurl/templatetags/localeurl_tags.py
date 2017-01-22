@@ -1,8 +1,7 @@
 from django import template
-from django.template import Node, Token, TemplateSyntaxError
-from django.template import resolve_variable
+from django.template.base import Token
+from django.template import Node, TemplateSyntaxError
 from django.template.defaultfilters import stringfilter
-from django.templatetags import future
 
 from localeurl import utils
 
@@ -62,7 +61,7 @@ class LocaleURLNode(Node):
         self.urlnode = urlnode
 
     def render(self, context):
-        locale = resolve_variable(self.locale, context)
+        locale = template.Variable(self.locale).resolve(context)
         if utils.supported_language(locale) is None:
             raise ValueError("locale not in settings.LANGUAGES: %s" % locale)
         path = self.urlnode.render(context)
